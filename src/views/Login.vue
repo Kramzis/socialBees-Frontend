@@ -17,7 +17,7 @@ export default {
 <template>
 <div>
   <img src="../assets/logo.png" alt="..." style="max-width: 150px; max-height: 150px"/>
-  <header-component title="Panel logowania"></header-component>
+  <header-component class="mt-3" title="Panel logowania" icon="pi pi-user"></header-component>
 </div>
 <div style="width:300px" class="mx-auto my-auto">
   <span class="p-float-label mt-4 mb-4">
