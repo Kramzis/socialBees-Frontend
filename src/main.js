@@ -6,6 +6,7 @@ import Toolbar from 'primevue/toolbar';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
+import Avatar from 'primevue/avatar';
 import 'primevue/resources/themes/saga-orange/theme.css'
 import "primeicons/primeicons.css";
 import "/node_modules/primeflex/primeflex.css";
@@ -20,4 +21,5 @@ createApp(App)
     .component("Button", Button)
     .component("Toolbar", Toolbar)
     .component("Calendar", Calendar)
+    .component("Avatar", Avatar)
     .mount('#app');
