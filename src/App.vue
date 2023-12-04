@@ -8,16 +8,26 @@
 
       <template #center>
         <div class="flex flex-wrap align-items-center gap-3">
-          <button class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"><i class="pi pi-home text-2xl"></i></button>
-          <button class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"><i class="pi pi-user text-2xl"></i></button>
-          <button class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"><i class="pi pi-search text-2xl"></i></button>
+          <router-link to="/home" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+            <i class="pi pi-home text-2xl"></i>
+          </router-link>
+
+          <router-link to="/addWork" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+            <i class="pi pi-plus text-2xl"></i>
+          </router-link>
+
+          <router-link to="/search" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+            <i class="pi pi-search text-2xl"></i>
+          </router-link>
+
+          <router-link to="/myProfile" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+            <i class="pi pi-user text-2xl"></i>
+          </router-link>
         </div>
       </template>
 
       <template #end>
         <div class="flex align-items-center gap-2">
-          <Avatar image="/images/avatar/amyelsner.png" shape="circle" />
-          <span class="font-bold text-bluegray-50">Username</span>
         </div>
       </template>
     </Toolbar>
@@ -45,9 +55,6 @@ export default {
     window.addEventListener('resize', this.resizeWindow);
     this.resizeWindow();
   },
-  // beforeDestroy() {
-  //   window.removeEventListener('resize', this.resizeWindow);
-  // },
   methods: {
     resizeWindow() {
       this.windowWidth = window.innerWidth;
@@ -68,8 +75,10 @@ export default {
 .toolbar{
   bottom: 50px;
   margin: auto;
-  //display: flex;
   justify-content: center;
+}
+.p-link {
+  text-decoration: none;
 }
 .hidden-footer {
   display: none;

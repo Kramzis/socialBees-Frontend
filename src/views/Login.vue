@@ -1,5 +1,6 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
+import axios from 'axios';
 
 export default {
   name: "LoginView",
@@ -9,6 +10,18 @@ export default {
     return {
       email: "",
       password: ""
+    }
+  },
+
+  methods: {
+    login(){
+      axios.post("http://localhost:8081/login", {
+        "email": this.email,
+        "password": this.password
+      }).then(response => {
+        localStorage.setItem("token", response.data)
+        this.$router.push('/home');
+      }).catch(error => {console.log(error)})
     }
   }
 }
@@ -24,14 +37,16 @@ export default {
       <InputText id="email" class="w-100" v-model="email"/>
       <label for="email">Adres e-mail</label>
   </span>
-  <span class="p-float-label mt-4 mb-4">
-      <InputText id="password" class="w-100" v-model="password"/>
-      <label for="password">Hasło</label>
+  <span style="width:300px" class="p-float-label mt-4 mb-4">
+    <Password v-model="password" :feedback="false" toggleMask inputStyle="width:300px"/>
+    <label for="password">Hasło</label>
   </span>
-  <Button label="Zaloguj się" raised style="border-radius: 10px"/>
+  <Button label="Zaloguj się" @click="login" raised style="border-radius: 10px"/>
 </div>
 </template>
 
 <style scoped>
-
+.p-password-panel{
+  width: 350px;
+}
 </style>

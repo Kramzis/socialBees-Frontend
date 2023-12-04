@@ -1,5 +1,6 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
+import axios from "axios";
 
 export default {
   name: "RegistrationView",
@@ -12,6 +13,29 @@ export default {
       email: "",
       password: "",
       birthday: ""
+    }
+  },
+
+  methods: {
+    createUser(){
+      const config = {
+      };
+
+      const formData = new FormData();
+      formData.append('name', this.name)
+      formData.append('surname', this.surname)
+      formData.append('username', this.username)
+      formData.append('email', this.email)
+      formData.append('password', this.password)
+      formData.append('birthday', this.birthday)
+
+      console.log(formData)
+      axios.post(`http://localhost:8081/register`, formData, config)
+          .then(response => {
+            console.log(response)
+          }).catch(error => {
+        console.log(error)
+      })
     }
   }
 }
@@ -49,7 +73,7 @@ export default {
       <InputText id="password" class="w-100" v-model="password"/>
       <label for="password">Hasło</label>
   </span>
-  <Button label="Zarejestruj się" raised style="border-radius: 10px"/>
+  <Button label="Zarejestruj się"  @click="createUser" raised style="border-radius: 10px"/>
   </div>
 </template>
 
