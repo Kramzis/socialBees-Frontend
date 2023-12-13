@@ -1,6 +1,7 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
 import axios from 'axios';
+import {createToast} from "mosha-vue-toastify";
 
 export default {
   name: "LoginView",
@@ -19,8 +20,17 @@ export default {
         "email": this.email,
         "password": this.password
       }).then(response => {
+        createToast({
+              title: 'Logowanie przebiegło pomyślnie!',
+              description: 'Za chwilę zostaniesz przekierowany do strony głównej.'
+            },
+            {
+              timeout: 2000,
+              type: 'success',
+              position: 'top-center',
+            })
+        setTimeout(() => this.$router.push('/home'), 2000);
         localStorage.setItem("token", response.data)
-        this.$router.push('/home');
       }).catch(error => {console.log(error)})
     }
   }

@@ -7,7 +7,7 @@ export default {
   components: {HeaderComponent},
   data(){
     return{
-      recentWorks: []
+      recentWorks: [],
     }
   },
 
@@ -26,14 +26,13 @@ export default {
       })
     },
 
-    downloadFiles(filesDB) {
+    downloadFile(fileDB) {
       const config = {
         headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
         responseType: 'blob'
       };
 
-      filesDB.forEach(element => {
-        axios.get(`http://localhost:8081/files/${element.id}`, config)
+        axios.get(`http://localhost:8081/file/${fileDB.id}`, config)
             .then(response => {
               console.log(response)
               const contentDisposition = response.headers['content-disposition'];
@@ -53,7 +52,10 @@ export default {
           console.log(error)
 
         })
-      })
+    },
+
+    goToAddComment(workId){
+      this.$router.push(`/addComment/${workId}`);
     }
   },
   beforeMount() {
@@ -64,6 +66,7 @@ export default {
 
 <template>
 <div>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|Poppins">
   <div>
     <header-component title="Strona główna" icon="pi pi-home"></header-component>
   </div>
@@ -74,23 +77,43 @@ export default {
     <div v-if="recentWorks.length > 0">
       <div v-for="work in recentWorks" :key="work.id">
         <div>
-          <div>{{work.title}}</div>
-          <div>{{work.content}}</div>
+          <div>
+            <div class="flex">
+              <i class=" pi pi-clock mx-2" style="font-size:16px"></i> {{work.date}}
+              <div class="flex" style="padding: 0; margin-left: 5px">
+              <i class="pi pi-user mx-1" style="font-size:16px"/>
+              <div class="username">{{work.user.username}}</div>
+              </div>
+            </div>
+            <div class="flex" v-if="work.tags.length !== 0">
+              <i class ="pi pi-tag" style="font-size:16px"/>
+              <div v-for="tag in work.tags.toSorted((a, b) => a.name > b.name? 1 : -1)" :key="tag.name">
+                <Tag class="mx-1" :value="tag.name"/>
+              </div>
+            </div>
+          <div v-else></div>
 
-          <div class ="flex">
-            <i class=" pi pi-comment mx-1" style="font-size:16px"></i> {{work.comments.length}}
-            <i class=" pi pi-clock mx-2" style="font-size:16px"></i> {{work.date}}
-          </div>
-
-          <div class="flex mx-2">
-            <i class ="pi pi-tag" style="font-size:16px"/>
-            <div v-for="tag in work.tags" :key="tag.name">
-              <Tag class="mx-1" :value="tag.name"/>
+          <div class="flex ml-3" style="justify-content: left">
+            <img v-if="work.fileDB !== null && work.fileDB.type.includes('image')" src="../assets/image-template.jpeg" alt="..." style="max-width: 80px; max-height: 80px; border-radius:25px"/>
+            <img v-if="work.fileDB !== null && work.fileDB.type.includes('video')" src="../assets/video-template.jpeg" alt="..." style="max-width: 80px; max-height: 80px; border-radius:25px"/>
+            <img v-if="work.fileDB !== null && work.fileDB.type.includes('audio')" src="../assets/audio-template.jpeg" alt="..." style="max-width: 80px; max-height: 80px; border-radius:25px"/>
+            <img v-if="work.fileDB === null" src="../assets/nofile-template.jpeg" alt="..." style="max-width: 80px; max-height: 80px; border-radius:25px"/>
+            <div class="ml-3" style="text-align: left">
+              <div><h4>{{work.title}}</h4></div>
+              <div class="body">{{work.content}}</div>
             </div>
           </div>
-          <div v-if="work.filesDB.length !== 0">
-            <Button icon="pi pi-download" @click="downloadFiles(work.filesDB)" raised style="border-radius: 10px"/>
+
+          <div class ="flex">
+            <i class=" pi pi-comment mx-1" style="font-size:16px" @click="goToAddComment(work.id)"></i> {{work.comments.length}}
           </div>
+
+          </div>
+
+          <div v-if="work.fileDB">
+            <Button icon="pi pi-download" @click="downloadFile(work.fileDB)" raised style="border-radius: 10px"/>
+          </div>
+
           <div v-else></div>
         </div>
         <Divider></Divider>
@@ -107,5 +130,19 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 10px;
+}
+
+.body {
+  font-family: Poppins, sans-serif;
+  font-size: 16px;
+}
+
+h4 {
+  font-family: 'Abril Fatface', serif;
+  font-size: 24px;
+}
+
+.username{
+  font-family: Poppins, sans-serif;
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <router-view />
-  <div class="toolbar fixed-bottom">
+  <div v-if="!$route.meta.hideToolbar" class="toolbar fixed-bottom">
+
     <Toolbar class="bg-gray-900 shadow-2" style="border-radius: 3rem; background-image: linear-gradient(to right, lightcoral, #d5a019)">
       <template #start>
         <img src="./assets/logo.png" alt="..." style="max-width: 50px; max-height: 50px; border-radius:25px"/>
@@ -16,8 +17,8 @@
             <i class="pi pi-plus text-2xl"></i>
           </router-link>
 
-          <router-link to="/search" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
-            <i class="pi pi-search text-2xl"></i>
+          <router-link to="/tags" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
+            <i class="pi pi-tag text-2xl"></i>
           </router-link>
 
           <router-link to="/myProfile" class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200">
@@ -32,11 +33,13 @@
       </template>
     </Toolbar>
   </div>
+
   <div>
     <footer class="footer" :class="{ 'hidden-footer': windowWidth <= 600 }">
       <div class="mx-auto mt-2">Copyright &copy; {{currentYear}}, Social Bees. All Rights Reserved.</div>
     </footer>
   </div>
+
 </template>
 
 <script>
@@ -93,6 +96,8 @@ export default {
 @media only screen and (min-width: 600px){
   .toolbar{
     max-width: 60%;
+    bottom: 0;
+    scale: 90%;
     margin-bottom: 60px !important;
   }
 }
@@ -100,7 +105,8 @@ export default {
   .toolbar{
     width: 100%;
     bottom: 0;
-    scale: 90%
+    scale: 90%;
+
   }
   .footer{
     height: 0;

@@ -1,5 +1,6 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
+import {createToast} from "mosha-vue-toastify";
 import axios from "axios";
 
 export default {
@@ -21,19 +22,42 @@ export default {
       const config = {
       };
 
-      const formData = new FormData();
-      formData.append('name', this.name)
-      formData.append('surname', this.surname)
-      formData.append('username', this.username)
-      formData.append('email', this.email)
-      formData.append('password', this.password)
-      formData.append('birthday', this.birthday)
+      const date = new Date(this.birthday);
 
-      console.log(formData)
-      axios.post(`http://localhost:8081/register`, formData, config)
+      axios.post(`http://localhost:8081/user/register`, {
+        "username": this.username,
+        "password": this.password,
+        "email": this.email,
+        "name": this.name,
+        "surname": this.surname,
+        "birthday": date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      }, config)
           .then(response => {
+            createToast({
+                  title: 'Rejestracja przebiegła pomyślnie!',
+                  description: 'Za chwilę zostaniesz przekierowany do strony logowania.'
+                },
+                {
+                  timeout: 2000,
+                  type: 'success',
+                  position: 'top-center',
+                })
+            setTimeout(() => this.$router.push('/login'), 2000)
             console.log(response)
           }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
         console.log(error)
       })
     }

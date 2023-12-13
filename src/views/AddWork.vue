@@ -12,7 +12,7 @@ export default {
       title: "",
       content: "",
       selectedTags: [],
-      files: [],
+      file: null,
       tags: []
     }
   },
@@ -39,32 +39,31 @@ export default {
       };
       const decodeData = decodeToken(localStorage.getItem("token"))
 
-      const formData = new FormData();
+      let formData = new FormData();
       formData.append('userId', decodeData.userId)
       formData.append('title', this.title)
       formData.append('content', this.content)
       formData.append('tags', this.selectedTags)
+      formData.append('file', this.file)
 
-      for (let i = 0; i < this.files.length; i++) {
-        formData.append('files', this.files[i]);
-      }
-      console.log(this.files)
       axios.post(`http://localhost:8081/work`, formData, config)
           .then(response => {
             console.log(response)
           }).catch(error => {
-            console.log(error)
+            console.log(error.response.data)
       })
     },
-    myUploader(event) {
-      this.files = event.files
-      event.files = null
-    }
+
+    handleFileChange(event) {
+      this.file = event.target.files[0];
+      console.log('Wybrano plik:', this.file);
+    },
 
   },
-    beforeMount() {
-      this.getTags()
-    }
+
+  beforeMount() {
+    this.getTags()
+  }
 }
 </script>
 
@@ -85,11 +84,8 @@ export default {
                  :maxSelectedLabels="3" class="w-full md:w-19rem mt-2" style="width:200px"/>
   </div>
   <div style="width:300px" class="mx-auto my-auto mt-3">
-  <FileUpload name="files" :customUpload="true" @uploader="myUploader" :multiple="true" accept="image/*,audio/*,video/*" :maxFileSize="1000000">
-    <template #empty>
-      <p>Przeciągnij i upuść pliki tutaj, by dodać.</p>
-    </template>
-  </FileUpload>
+    <label for="file">Wybierz plik:</label>
+    <input type="file" id="file" name="file" accept="image/*,audio/*,video/*"  @change="handleFileChange"/>
   </div>
 
   <div class="mx-auto my-auto mt-3">
