@@ -2,6 +2,7 @@
 import HeaderComponent from "@/components/Header.vue";
 import axios from "axios";
 import decodeToken from "@/tokenDecoder";
+import {createToast} from "mosha-vue-toastify";
 
 export default {
   name: "EditWorkView",
@@ -12,7 +13,7 @@ export default {
       title: "",
       content: "",
       selectedTags: [],
-      files: [],
+      file: null,
       tags: []
     }
   },
@@ -42,10 +43,8 @@ export default {
             this.title = response.data.title
             this.content = response.data.content
             this.selectedTags = response.data.tags
-            this.files = response.data.filesDB
           }).catch(error => {
         console.log(error)
-
       })
     },
 
@@ -61,23 +60,41 @@ export default {
       formData.append('title', this.title)
       formData.append('content', this.content)
       formData.append('tags', this.selectedTags)
-
-      for (let i = 0; i < this.files.length; i++) {
-        formData.append('files', this.files[i]);
+      if(this.file !== null){
+        formData.append('file', this.file)
       }
 
       axios.put(`http://localhost:8081/work/${workId}`, formData, config)
           .then(response => {
+            createToast({
+                  title: 'Zapisano zmiany!',
+                  description: 'Za chwilę zostaniesz przekierowany do swojego profilu.'
+                },
+                {
+                  timeout: 2000,
+                  type: 'success',
+                  position: 'top-center',
+                })
+            setTimeout(() => this.$router.push('/myProfile'), 2000)
             console.log(response)
           }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
         console.log(error)
 
       })
     },
-    myUploader(event) {
-      this.files = event.files
-      event.files = null
-    }
+    handleFileChange(event) {
+      this.file = event.target.files[0];
+      console.log('Wybrano plik:', this.file);
+    },
   },
 
   beforeMount() {
@@ -104,11 +121,8 @@ export default {
                    :maxSelectedLabels="3" class="w-full md:w-19rem mt-2" style="width:200px"/>
     </div>
     <div style="width:300px" class="mx-auto my-auto mt-3">
-      <FileUpload name="files" :customUpload="true" @uploader="myUploader" :multiple="true" accept="image/*,audio/*,video/*" :maxFileSize="1000000">
-        <template #empty>
-          <p>Przeciągnij i upuść pliki tutaj, by dodać.</p>
-        </template>
-      </FileUpload>
+      <label for="file">Wybierz plik:</label>
+      <input type="file" id="file" name="file" accept="image/*,audio/*,video/*"  @change="handleFileChange"/>
     </div>
 
     <div class="mx-auto my-auto mt-3">

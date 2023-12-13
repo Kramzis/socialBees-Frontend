@@ -1,6 +1,7 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
 import axios from 'axios';
+import {createToast} from "mosha-vue-toastify";
 
 const decodeToken = require('../tokenDecoder');
 
@@ -80,6 +81,20 @@ export default {
       })
     },
 
+    logout(){
+      localStorage.removeItem("token")
+      createToast({
+            title: 'Wylogowanie przebiegło pomyślnie!',
+            description: 'Za chwilę zostaniesz przekierowany do strony logowania.'
+          },
+          {
+            timeout: 2000,
+            type: 'success',
+            position: 'top-center',
+          })
+      setTimeout(() => this.$router.push('/login'), 2000);
+    },
+
     goToEditProfile(userId) {
       this.$router.push(`/editProfile/${userId}`)
     },
@@ -90,6 +105,10 @@ export default {
 
     goToFollowingList(userId) {
       this.$router.push(`/following/${userId}`)
+    },
+
+    goToAddComment(workId){
+      this.$router.push(`/addComment/${workId}`);
     }
   },
 
@@ -105,11 +124,9 @@ export default {
   <div>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|Poppins">
     <div class="flex">
-      <header-component title="Mój profil" icon=" pi pi-user" style="align-items: center"></header-component>
-      <div class="mx-2">
-        <Button icon="pi pi-user-edit" @click="goToEditProfile(this.userInfo.id)" outlined aria-label="Edit profile"
-                style="border-radius: 100%; width: 48px"/>
-      </div>
+      <Button icon="pi pi-cog" @click="goToEditProfile(this.userInfo.id)" aria-label="Edit profile" style="align-items: center; border-radius: 100%; width: 48px"/>
+      <header-component title="Mój profil" style="align-items: center"></header-component>
+      <Button class="ml-2" icon="pi pi-sign-out" @click="logout" aria-label="Wyloguj się" style="align-items: center; border-radius: 100%; width: 48px"/>
     </div>
     <Avatar :label="label" class="mr-2 my-5" size="xlarge" shape="circle"/>
     <h5>@{{ this.userInfo.username }}</h5>
@@ -135,6 +152,10 @@ export default {
         <div v-for="work in userWorks" :key="work.id">
           <div>
             <div>
+              <div class="flex mx-auto my-auto">
+                <div class="mx-2"><Button icon="pi pi-pencil" @click="goToEdit(work.id)" raised style="font-size: 12px; border-radius: 10px"/> </div>
+                <div><Button icon="pi pi-trash" @click="deleteWork(work.id)" raised style="font-size: 12px; border-radius: 10px"/> </div>
+              </div>
               <div class="flex">
                 <i class=" pi pi-clock mx-2" style="font-size:16px"></i> {{ work.date }}
                 <div class="flex" style="padding: 0; margin-left: 5px">

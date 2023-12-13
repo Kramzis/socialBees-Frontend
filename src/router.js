@@ -15,6 +15,7 @@ import Follower from "@/views/Follower.vue";
 import UserProfile from "@/views/UserProfile.vue";
 import 'mosha-vue-toastify/dist/style.css';
 import Tags from "@/views/Tags.vue";
+import WorkDetails from "@/views/WorkDetails.vue";
 
 const routes = [
     {
@@ -78,6 +79,14 @@ const routes = [
         component: AddWork,
         beforeEnter: authMiddleware,
     },
+
+    {
+        path: "/work/:workId",
+        name: "Work details",
+        component: WorkDetails,
+        beforeEnter: authMiddleware,
+    },
+
     {
         path: "/editWork/:workId",
         name: "Edit work",
@@ -91,7 +100,7 @@ const routes = [
         beforeEnter: authMiddleware,
     },
     {
-        path: "/editComment",
+        path: "/editComment/:workId/:commentId",
         name: "Edit comment",
         component: EditComment,
         beforeEnter: authMiddleware,
@@ -109,13 +118,9 @@ const router = createRouter({
     routes,
 });
 
-function checkIfTokenExists () {
-    let token = localStorage.getItem('token');
-    return !!token;
-}
 
 function authMiddleware (to, from, next) {
-    if (checkIfTokenExists()) {
+    if (localStorage.getItem("token")) {
         next();
     } else {
         createToast({

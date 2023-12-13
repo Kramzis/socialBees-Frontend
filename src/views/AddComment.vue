@@ -2,6 +2,7 @@
 import HeaderComponent from "@/components/Header.vue";
 import decodeToken from "@/tokenDecoder";
 import axios from "axios";
+import {createToast} from "mosha-vue-toastify";
 
 export default {
   name: "AddCommentView",
@@ -21,16 +22,33 @@ export default {
       };
       const decodeData = decodeToken(localStorage.getItem("token"))
 
-      const formData = new FormData();
-      formData.append('userId', decodeData.userId)
-      formData.append('workId', workId)
-      formData.append('content', this.content)
-
-      console.log(formData)
-      axios.post(`http://localhost:8081/comment`, formData, config)
+      axios.post(`http://localhost:8081/comment`, {
+        'userId': decodeData.userId,
+        'workId': workId,
+        'content': this.content,
+      }, config)
           .then(response => {
             console.log(response)
+            createToast({
+                  title: 'Komentarz dodany poprawnie!',
+                  description: 'Zaraz nastąpi przekierowanie do posta.'
+                },
+                {
+                  timeout: 2000,
+                  position: 'top-center',
+                  type: 'success',
+                })
+            setTimeout(() => this.$router.push(`/work/${workId}`), 2000);
           }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
         console.log(error)
       })
     }

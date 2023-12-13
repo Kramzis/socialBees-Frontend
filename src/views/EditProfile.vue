@@ -1,19 +1,22 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
 import axios from "axios";
+import {createToast} from "mosha-vue-toastify";
 
 export default {
   name: "EditProfileView",
   components: {HeaderComponent},
 
-  data(){
+  data() {
     return {
       label: String,
       name: "",
       surname: "",
       username: "",
       email: "",
-      birthday: ""
+      birthday: "",
+      isDeleted: Boolean,
+      visible: false,
     }
   },
 
@@ -37,27 +40,76 @@ export default {
       })
     },
 
-    editUser(){
+    editUser() {
       const userId = this.$route.params.userId;
+      const date = new Date(this.birthday);
       const config = {
         headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
       };
 
       axios.put(`http://localhost:8081/user/${userId}`,
-          {'name': this.name,
-        'surname': this.surname,
-        'username': this.username,
-        'email': this.email,
-        'birthday': this.birthday}, config)
+          {
+            'name': this.name,
+            'surname': this.surname,
+            'username': this.username,
+            'email': this.email,
+            "birthday": date.toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })
+          }, config)
           .then(response => {
+            createToast({
+                  title: 'Zapisano zmiany!',
+                  description: 'Za chwilę zostaniesz przekierowany do swojego profilu.'
+                },
+                {
+                  timeout: 2000,
+                  type: 'success',
+                  position: 'top-center',
+                })
+            setTimeout(() => this.$router.push('/myProfile'), 2000)
+            console.log(response)
+          }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
+        console.log(error)
+      })
+    },
+
+    deleteUser() {
+      const userId = this.$route.params.userId;
+      const config = {
+        headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+      };
+      axios.delete(`http://localhost:8081/user/${userId}`, config)
+          .then(response => {
+            this.visible = false
+            createToast({
+                  title: 'Twoje konto zostało usunięte pomyślnie!',
+                  description: 'Zaraz nastąpi przekierowanie na stronę logowania.'
+                },
+                {
+                  timeout: 2000,
+                  position: 'top-center',
+                  type: 'info',
+                })
+            setTimeout(() => this.$router.push('/login'), 2000);
+            this.isDeleted = true
             console.log(response)
           }).catch(error => {
         console.log(error)
-
       })
     }
   },
-
   beforeMount() {
     this.getUser()
   }
@@ -95,6 +147,24 @@ export default {
     </span>
       <Button label="Zapisz zmiany"  @click="editUser" raised style="border-radius: 10px"/>
     </div>
+
+
+    <Button class="mt-4" label="Usuń konto" icon="pi pi-trash" @click="visible = true" raised style="border-radius: 10px" severity="danger"/>
+
+    <template>
+      <div class="card flex justify-content-center">
+        <Dialog v-model:visible="visible" modal header="Uwaga!" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+          <p>
+            Czy na pewno chcesz usunąć swoje konto oraz wszystkie swoje dane?
+          </p>
+          <div class="flex justify-content-center">
+            <Button label="Tak" icon="pi pi-check" @click="deleteUser" autofocus severity="danger"/>
+            <Button class="ml-3" label="Anuluj" icon="pi pi-times" @click="visible = false" autofocus />
+          </div>
+        </Dialog>
+      </div>
+    </template>
+
   </div>
 </template>
 

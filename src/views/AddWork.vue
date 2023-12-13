@@ -1,6 +1,7 @@
 <script>
 import HeaderComponent from "@/components/Header.vue";
 import axios from 'axios';
+import {createToast} from "mosha-vue-toastify";
 const decodeToken = require('../tokenDecoder');
 
 export default {
@@ -44,12 +45,33 @@ export default {
       formData.append('title', this.title)
       formData.append('content', this.content)
       formData.append('tags', this.selectedTags)
-      formData.append('file', this.file)
+      if(this.file !== null){
+        formData.append('file', this.file)
+      }
 
       axios.post(`http://localhost:8081/work`, formData, config)
           .then(response => {
             console.log(response)
+            createToast({
+                  title: 'Praca została dodana poprawnie!',
+                  description: 'Zaraz nastąpi przekierowanie do strony głównej.'
+                },
+                {
+                  timeout: 2000,
+                  position: 'top-center',
+                  type: 'success',
+                })
+            setTimeout(() => this.$router.push(`/home`), 2000);
           }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
             console.log(error.response.data)
       })
     },

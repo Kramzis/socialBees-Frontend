@@ -14,6 +14,7 @@ import Calendar from 'primevue/calendar';
 import Tag from 'primevue/tag';
 import Avatar from 'primevue/avatar';
 import Divider from 'primevue/divider';
+import Dialog from 'primevue/dialog';
 import 'primevue/resources/themes/saga-orange/theme.css'
 import "primeicons/primeicons.css";
 import "/node_modules/primeflex/primeflex.css";
@@ -35,5 +36,6 @@ const app = createApp(App)
     .component("Avatar", Avatar)
     .component("Password", Password)
     .component("Tag", Tag)
+    .component("Dialog", Dialog)
 
 app.mount('#app');

@@ -2,6 +2,7 @@
 import HeaderComponent from "@/components/Header.vue";
 //import decodeToken from "@/tokenDecoder";
 import axios from "axios";
+import {createToast} from "mosha-vue-toastify";
 
 export default {
   name: "EditCommentView",
@@ -9,28 +10,68 @@ export default {
 
   data(){
     return {
-      content: ""
+      content: "",
+      workId: null
     }
   },
 
   methods: {
-    editComment(){
+    getComment() {
+      this.workId = this.$route.params.workId;
+      const commentId = this.$route.params.commentId;
       const config = {
         headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
       };
 
-      const formData = new FormData();
-      //formData.append('userId', decodeData.userId)
-      formData.append('content', this.content)
-
-      axios.put(`http://localhost:8081/comment`, config)
+      axios.get(`http://localhost:8081/comment/${commentId}`, config)
           .then(response => {
+            this.content = response.data.content
             console.log(response)
           }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    editComment(){
+      const commentId = this.$route.params.commentId;
+      const config = {
+        headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+      };
+
+      axios.put(`http://localhost:8081/comment/${commentId}`, {
+            "content": this.content
+          },
+          config)
+          .then(response => {
+            createToast({
+                  title: 'Zapisano zmiany!',
+                  description: 'Za chwilę zostaniesz przekierowany do swojego profilu.'
+                },
+                {
+                  timeout: 2000,
+                  type: 'success',
+                  position: 'top-center',
+                })
+
+            setTimeout(() => this.$router.push(`/work/${this.workId}`), 2000)
+            console.log(response)
+          }).catch(error => {
+        createToast({
+              title: 'Niepoprawne dane!',
+              description: error.response.data.join("</br>")
+            },
+            {
+              timeout: 2000,
+              type: 'danger',
+              position: 'top-center',
+            })
         console.log(error)
 
       })
     }
+  },
+  beforeMount() {
+    this.getComment()
   }
 }
 </script>
